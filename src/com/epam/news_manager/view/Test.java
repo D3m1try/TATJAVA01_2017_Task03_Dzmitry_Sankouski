@@ -16,20 +16,18 @@ import java.util.regex.Pattern;
 public class Test {
     public static void main(String[] args) throws ParseException {
         int i = 0;
-        Pattern pattern = Pattern.compile("(\\s\\-[^\\s]+\\s+)([^\\s]+)");
-        Matcher matcher = pattern.matcher("     add   -ISBN  asjk  -d 2013-03-03 -ksdjf kjshdfk   - sjfhksfh kj");
 
         Pattern p = Pattern.compile("\\s\\-ISBN+\\s+[^\\s]+\\s");
         Matcher m = p.matcher(" -ISBN  asjk ");
 
-        pattern = Pattern.compile("title:zzz");
-        matcher = pattern.matcher("Book\n" +
-                "title:zzzzzz;date:Thu Jan 01 06:44:14 MSK 1970;message:kjndfskjsjkdfjvnsk;isbn:sdjfkvgsjdfkvasjdfvka;pageCount:0;id:1.Book");
+        Pattern pattern = Pattern.compile("^(\\s*)(\\w+)(.+)");
+        Matcher matcher = pattern.matcher("  book  title mybook");
 
 
         while (matcher.find()) {
-            System.out.println(matcher.group(0));
-//            System.out.println(matcher.group(2));
+            System.out.println(matcher.group(1));
+            System.out.println(matcher.group(2));
+            System.out.println(matcher.group(3));
             i++;
         }
 

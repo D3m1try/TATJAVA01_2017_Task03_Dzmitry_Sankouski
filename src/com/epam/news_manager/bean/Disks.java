@@ -8,9 +8,9 @@ import java.util.List;
  * Created by Dzmitry_Sankouski on 01-Feb-17.
  */
 public class Disks extends Beans implements Serializable {
-    List<Disk> listOfDisks = new ArrayList<>();
+    List<Book> listOfDisks = new ArrayList<>();
 
-    public List<Disk> getListOfDisks() {
+    public List<Book> getListOfDisks() {
         return listOfDisks;
     }
 }

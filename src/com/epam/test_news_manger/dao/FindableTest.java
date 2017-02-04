@@ -16,7 +16,7 @@ import java.util.Date;
 public class FindableTest {
     static Book book;
     static Books books;
-    static Disk disk;
+    static Book disk;
     static Disks disks;
     static Movie movie;
     static Movies movies;
@@ -78,7 +78,6 @@ public class FindableTest {
     @Test(dataProvider = "test1")
     public void findTest(FileGenericDAOImpl dao, Serializable bean){
         BeanFactory.getInstance().getKeys().getBookIDs().add(dao.create(bean));
-        Assert.assertEquals(bean,dao.find("date",new Date(13454566).toString()).get(0),"find fails");
-//        Assert.assertEquals(bean,dao.find("title","zzz").get(0),"find fails");
+        Assert.assertEquals(bean,dao.find("date",new Date(13454566).toString(), false).get(0),"find fails");
     }
 }

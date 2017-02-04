@@ -3,9 +3,6 @@ package com.epam.news_manager.bean;
 import com.epam.news_manager.dao.exception.DAOException;
 import com.epam.news_manager.dao.impl.DAOFactory;
 
-import java.security.PrivateKey;
-import java.util.Date;
-
 /**
  * Created by Dzmitry_Sankouski on 31-Jan-17.
  */
@@ -41,8 +38,9 @@ public class BeanFactory {
         return new Book();
     }
 
-    public Disk getDisk() {
-        return new Disk();
+
+    public Book getDisk() {
+        return new Book();
     }
 
     public Movie getMovie() {

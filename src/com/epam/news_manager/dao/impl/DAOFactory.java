@@ -9,7 +9,7 @@ public class DAOFactory {
     private static final DAOFactory instance = new DAOFactory();
     private KeysDAO keysDAO = new KeysDAO();
     private FileGenericDAOImpl<Book> bookDAO = new FileGenericDAOImpl<>(Book.class);
-    private FileGenericDAOImpl<Disk> diskDAO = new FileGenericDAOImpl<Disk>(Disk.class);
+    private FileGenericDAOImpl<Disk> diskDAO = new FileGenericDAOImpl<>(Disk.class);
     private FileGenericDAOImpl<Movie> movieDAO = new FileGenericDAOImpl<Movie>(Movie.class);
     private FileGenericDAOImpl<Books> booksDAO = new FileGenericDAOImpl<Books>(Books.class);
     private FileGenericDAOImpl<Disks> disksDAO = new FileGenericDAOImpl<Disks>(Disks.class);

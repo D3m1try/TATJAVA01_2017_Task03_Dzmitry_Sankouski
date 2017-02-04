@@ -16,7 +16,7 @@ import java.util.Date;
 public class GenericDAOSmokeTests {
     static Book book;
     static Books books;
-    static Disk disk;
+    static Book disk;
     static Disks disks;
     static Movie movie;
     static Movies movies;

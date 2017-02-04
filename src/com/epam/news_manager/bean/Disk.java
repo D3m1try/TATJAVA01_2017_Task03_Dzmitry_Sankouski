@@ -7,4 +7,18 @@ import java.io.Serializable;
  */
 public class Disk extends Beans implements Serializable {
 
+
+    @Override
+    public String toString(){
+        StringBuilder result = new StringBuilder();
+        result.append(this.getClass().getSimpleName()).append("\n").
+                append("title:").append(getTitle())
+                .append(";date:").append(getDate())
+                .append(";message:").append(getMessage()).
+                append(";id:").append(getId());
+
+        return result.toString();
+
+    }
+
 }

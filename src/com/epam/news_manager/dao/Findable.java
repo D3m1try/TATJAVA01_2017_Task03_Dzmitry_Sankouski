@@ -7,5 +7,5 @@ import java.util.List;
  */
 public interface Findable<T> {
 
-    List<T> find(String fieldName, String value);
+    List<T> find(String fieldName, String value, boolean isPureSearch);
 }

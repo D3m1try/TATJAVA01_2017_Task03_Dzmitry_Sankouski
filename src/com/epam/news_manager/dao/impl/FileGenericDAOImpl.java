@@ -7,7 +7,6 @@ import com.epam.news_manager.dao.GenericDAO;
 import com.epam.news_manager.dao.exception.DAOException;
 
 import java.io.*;
-import java.lang.reflect.ParameterizedType;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -91,7 +90,7 @@ public class FileGenericDAOImpl<T extends Serializable & Identifiable<String>> i
     }
 
     @Override
-    public List<T> find(String fieldName, String value) {
+    public List<T> find(String fieldName, String value, boolean isPureSearch) {
         List<T> data = new ArrayList<>();
         for (String key:
                 BeanFactory.getInstance().getKeys().getAll()) {
@@ -105,12 +104,19 @@ public class FileGenericDAOImpl<T extends Serializable & Identifiable<String>> i
             }
         } // retrieving all data
 
-        Pattern pattern = Pattern.compile(fieldName + ":" + value);
+        Pattern purePattern = Pattern.compile(fieldName + ":" + value + ";");
+        Pattern ordinaryPattern = Pattern.compile(fieldName + ":" + ".*" + value + ".*");
         Matcher matcher;
+
         List<T> result = new ArrayList<>();
         for (T peaceOfData:
              data) {
-            matcher = pattern.matcher(peaceOfData.toString());
+
+            if (isPureSearch) {
+                matcher = purePattern.matcher(peaceOfData.toString());
+            } else {
+                matcher = ordinaryPattern.matcher(peaceOfData.toString());
+            }
             if (matcher.find()){
                 result.add(peaceOfData);
             }

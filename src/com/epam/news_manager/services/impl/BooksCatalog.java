@@ -2,10 +2,8 @@ package com.epam.news_manager.services.impl;
 
 import com.epam.news_manager.bean.BeanFactory;
 import com.epam.news_manager.bean.Book;
-import com.epam.news_manager.bean.Keys;
 import com.epam.news_manager.dao.exception.DAOException;
 import com.epam.news_manager.dao.impl.DAOFactory;
-import com.sun.org.apache.xerces.internal.impl.xpath.regex.Match;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -50,6 +48,7 @@ public class BooksCatalog implements com.epam.news_manager.services.Catalog<Book
         books.add(newBook);
         BeanFactory.getInstance().getKeys().getBookIDs().add(
                 DAOFactory.getInstance().getBookDAO().create(newBook));
+        DAOFactory.getInstance().getKeysDAO().update(BeanFactory.getInstance().getKeys());
     }
 
     public void edit(String request) {
@@ -95,7 +94,17 @@ public class BooksCatalog implements com.epam.news_manager.services.Catalog<Book
 
     @Override
     public List<Book> find(String request) {
-        return null;
+        Pattern pattern = Pattern.compile("(\\-p)?\\s?(\\w+)\\s+(.+)");
+        Matcher matcher = pattern.matcher(request);
+
+        if (!matcher.find()){
+            // TODO illegal arguments exception
+        }
+        if (matcher.group(1) != null) {
+            return DAOFactory.getInstance().getBookDAO().find(matcher.group(2), matcher.group(3), true);
+        } else {
+            return DAOFactory.getInstance().getBookDAO().find(matcher.group(2), matcher.group(3), false);
+        }
     }
 
     @Override

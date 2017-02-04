@@ -14,20 +14,19 @@ import java.util.regex.Pattern;
 public class Add implements Command {
     @Override
     public String execute(String request) {
-        Pattern pattern = Pattern.compile("^(\\s+?)([^\\s]+)");
+        Pattern pattern = Pattern.compile("^(\\s*)([\\w]+)");
         Matcher matcher = pattern.matcher(request);
         matcher.find();
         if (matcher.group(2).toLowerCase().equals("book")){
             BooksCatalog.getInstance().add(request);
         }
         if (matcher.group(2).toLowerCase().equals("disk")){
-//            DisksCatalog.getInstance().add(request);
+            DisksCatalog.getInstance().add(request);
         }
         if (matcher.group(2).toLowerCase().equals("movie")){
-//            MoviesCatalog.getInstance().add(request);
+            MoviesCatalog.getInstance().add(request);
         }
-        System.out.println("add");
-        System.out.println("args:" + request);
+
         return "add";
     }
 }
