@@ -14,16 +14,16 @@ import java.util.regex.Pattern;
 public class Add implements Command {
     @Override
     public String execute(String request) {
-        Pattern pattern = Pattern.compile("[^\\s]+");
+        Pattern pattern = Pattern.compile("^(\\s+?)([^\\s]+)");
         Matcher matcher = pattern.matcher(request);
         matcher.find();
-        if (matcher.group(0).toLowerCase().equals("book")){
+        if (matcher.group(2).toLowerCase().equals("book")){
             BooksCatalog.getInstance().add(request);
         }
-        if (matcher.group(0).toLowerCase().equals("disk")){
+        if (matcher.group(2).toLowerCase().equals("disk")){
 //            DisksCatalog.getInstance().add(request);
         }
-        if (matcher.group(0).toLowerCase().equals("movie")){
+        if (matcher.group(2).toLowerCase().equals("movie")){
 //            MoviesCatalog.getInstance().add(request);
         }
         System.out.println("add");

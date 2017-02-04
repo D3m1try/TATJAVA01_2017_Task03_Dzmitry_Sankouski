@@ -1,23 +1,32 @@
 package com.epam.news_manager.dao.impl;
 
-import com.epam.news_manager.bean.Beans;
+import com.epam.news_manager.bean.BeanFactory;
 import com.epam.news_manager.bean.Identifiable;
+import com.epam.news_manager.dao.Findable;
 import com.epam.news_manager.dao.GenericDAO;
 import com.epam.news_manager.dao.exception.DAOException;
 
 import java.io.*;
+import java.lang.reflect.ParameterizedType;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Created by Dzmitry_Sankouski on 30-Jan-17.
  */
-public class FileGenericDAOImpl<T extends Serializable & Identifiable<String>> implements GenericDAO<T, String> {
+public class FileGenericDAOImpl<T extends Serializable & Identifiable<String>> implements GenericDAO<T, String>,Findable<T> {
     private Class<T> type;
 
 
-//    public FileGenericDAOImpl(Class<T> type) {
-//        this.type = type;
-//    }
+    public FileGenericDAOImpl() {
+
+    }
+
+    public FileGenericDAOImpl(Class<T> type) {
+        this.type = type;
+    }
 
 
     @Override
@@ -79,5 +88,35 @@ public class FileGenericDAOImpl<T extends Serializable & Identifiable<String>> i
     @Override
     public void delete(T persistentObject) {
         new File(String.valueOf(persistentObject.getId())).delete();
+    }
+
+    @Override
+    public List<T> find(String fieldName, String value) {
+        List<T> data = new ArrayList<>();
+        for (String key:
+                BeanFactory.getInstance().getKeys().getAll()) {
+            if (key.contains(type.getSimpleName())){
+
+                try {
+                    data.add(this.read(key));
+                } catch (DAOException e) {
+                    e.printStackTrace(); //TODO Exception
+                }
+            }
+        } // retrieving all data
+
+        Pattern pattern = Pattern.compile(fieldName + ":" + value);
+        Matcher matcher;
+        List<T> result = new ArrayList<>();
+        for (T peaceOfData:
+             data) {
+            matcher = pattern.matcher(peaceOfData.toString());
+            if (matcher.find()){
+                result.add(peaceOfData);
+            }
+        }
+
+
+        return result;
     }
 }

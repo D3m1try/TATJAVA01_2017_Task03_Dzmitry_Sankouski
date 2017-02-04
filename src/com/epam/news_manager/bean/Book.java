@@ -25,4 +25,19 @@ public class Book extends Beans implements Serializable {
     public void setISBN(String ISBN) {
         this.ISBN = ISBN;
     }
+
+    @Override
+    public String toString(){
+        StringBuilder result = new StringBuilder();
+        result.append(this.getClass().getSimpleName()).append("\n").
+                append("title:").append(getTitle())
+                .append(";date:").append(getDate())
+                .append(";message:").append(getMessage()).
+                append(";isbn:").append(getISBN()).
+                append(";pageCount:").append(getPageCount()).
+                append(";id:").append(getId());
+
+        return result.toString();
+
+    }
 }

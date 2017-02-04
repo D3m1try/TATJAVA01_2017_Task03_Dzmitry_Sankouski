@@ -53,6 +53,17 @@ public class Keys implements Serializable,Identifiable<String>{
                 + otherIDs.size();
     }
 
+    public List<String> getAll(){
+        List<String> result = new ArrayList<>();
+        result.addAll(bookIDs);
+        result.addAll(booksIDs);
+        result.addAll(diskIDs);
+        result.addAll(disksIDs);
+        result.addAll(movieIDs);
+        result.addAll(moviesIDs);
+        result.addAll(otherIDs);
+        return result;
+    }
 
     @Override
     public String getId() {
