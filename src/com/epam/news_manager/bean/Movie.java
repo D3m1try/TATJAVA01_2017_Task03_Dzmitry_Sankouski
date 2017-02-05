@@ -41,10 +41,11 @@ public class Movie extends Beans implements Serializable {
     public String toString(){
         StringBuilder result = new StringBuilder();
         result.append(this.getClass().getSimpleName()).append("\n").
-                append("title:").append(getTitle())
-                .append(";date:").append(getDate())
-                .append(";message:").append(getMessage()).
+                append("title:").append(getTitle()).
+                append(";date:").append(getDate()).
+                append(";message:").append(getMessage()).
                 append(";theme:").append(getTheme()).
+                append(";slogan:").append(getSlogan()).
                 append(";length:").append(getLength()).
                 append(";id:").append(getId());
 

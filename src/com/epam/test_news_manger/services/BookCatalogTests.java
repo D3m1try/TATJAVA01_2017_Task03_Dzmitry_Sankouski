@@ -2,10 +2,12 @@ package com.epam.test_news_manger.services;
 
 import com.epam.news_manager.bean.BeanFactory;
 import com.epam.news_manager.bean.Book;
+import com.epam.news_manager.services.exception.ServiceException;
 import com.epam.news_manager.services.impl.BooksCatalog;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
+import java.security.Provider;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -18,7 +20,7 @@ import java.util.Locale;
 public class BookCatalogTests {
 
     @Test
-    public void addTest() throws ParseException {
+    public void addTest() throws ParseException,ServiceException {
         Book testBook;
 
         String ISBN = "klsdfhgla";

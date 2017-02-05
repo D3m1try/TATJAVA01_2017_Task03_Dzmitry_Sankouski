@@ -11,6 +11,9 @@ public class Viewer {
 
     public static String beansToString(List<? extends Beans> beans) {
         StringBuilder result = new StringBuilder();
+        if (beans.isEmpty()){
+            return "nothing";
+        }
         for (Beans bean :
                 beans) {
             result.append(bean.getClass().getSimpleName()).append(":\n").

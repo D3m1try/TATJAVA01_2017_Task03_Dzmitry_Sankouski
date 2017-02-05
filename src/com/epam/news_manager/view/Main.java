@@ -1,5 +1,8 @@
 package com.epam.news_manager.view;
 
+import com.epam.news_manager.controller.exception.ControllerException;
+import com.epam.news_manager.controller.exception.ExitException;
+import com.epam.news_manager.controller.exception.UnknownCommand;
 import com.epam.news_manager.controller.impl.Controller;
 
 import java.io.BufferedReader;
@@ -22,7 +25,15 @@ public class Main {
                 System.out.println("IO Exception while reading keyboard input. Program will be terminated");
                 return;
             }
-            System.out.println(controller.executeTask(userInput));
+            try {
+                System.out.println(controller.executeTask(userInput));
+            } catch (ExitException e) {
+                return;
+            } catch (UnknownCommand e){
+                System.out.println("Unknown Command");
+            } catch (ControllerException e){
+                System.out.println(e.getMessage());
+            }
         }
     }
 }

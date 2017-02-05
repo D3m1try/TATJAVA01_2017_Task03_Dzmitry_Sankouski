@@ -11,7 +11,7 @@ import java.util.List;
 public interface GenericDAO <T extends Serializable, PK> {
 
     /** Сохранить объект newInstance в базе данных */
-    PK create(T newInstance);
+    PK create(T newInstance) throws DAOException;
 
     /** Извлечь объект, предварительно сохраненный в базе данных, используя
      *   указанный id в качестве первичного ключа
@@ -19,7 +19,7 @@ public interface GenericDAO <T extends Serializable, PK> {
     T read(PK id) throws DAOException;
 
     /** Сохранить изменения, сделанные в объекте.  */
-    void update(T transientObject);
+    void update(T transientObject) throws DAOException;
 
     /** Удалить объект из базы данных */
     void delete(T persistentObject);

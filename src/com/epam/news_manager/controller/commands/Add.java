@@ -1,6 +1,7 @@
 package com.epam.news_manager.controller.commands;
 
 import com.epam.news_manager.controller.Command;
+import com.epam.news_manager.services.exception.ServiceException;
 import com.epam.news_manager.services.impl.BooksCatalog;
 import com.epam.news_manager.services.impl.DisksCatalog;
 import com.epam.news_manager.services.impl.MoviesCatalog;
@@ -17,16 +18,21 @@ public class Add implements Command {
         Pattern pattern = Pattern.compile("^(\\s*)([\\w]+)");
         Matcher matcher = pattern.matcher(request);
         matcher.find();
-        if (matcher.group(2).toLowerCase().equals("book")){
-            BooksCatalog.getInstance().add(request);
-        }
-        if (matcher.group(2).toLowerCase().equals("disk")){
-            DisksCatalog.getInstance().add(request);
-        }
-        if (matcher.group(2).toLowerCase().equals("movie")){
-            MoviesCatalog.getInstance().add(request);
+
+        try {
+            if (matcher.group(2).toLowerCase().equals("book")){
+                BooksCatalog.getInstance().add(request);
+            }
+            if (matcher.group(2).toLowerCase().equals("disk")){
+                DisksCatalog.getInstance().add(request);
+            }
+            if (matcher.group(2).toLowerCase().equals("movie")){
+                MoviesCatalog.getInstance().add(request);
+            }
+        } catch (ServiceException e) {
+            return e.getMessage();
         }
 
-        return "add";
+        return "";
     }
 }

@@ -102,7 +102,7 @@ public class GenericDAOSmokeTests {
     }
 
     @Test(dataProvider = "test1")
-    public void createDelete(FileGenericDAOImpl dao, Serializable bean){
+    public void createDelete(FileGenericDAOImpl dao, Serializable bean) throws DAOException{
         Identifiable<String> result;
         dao.create(bean);
         dao.delete(bean);

@@ -1,8 +1,7 @@
 package com.epam.news_manager.controller.impl;
 
 import com.epam.news_manager.controller.Command;
-import com.epam.news_manager.controller.commands.Add;
-import com.epam.news_manager.controller.commands.Find;
+import com.epam.news_manager.controller.commands.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -15,7 +14,10 @@ final class CommandProvider {
     CommandProvider(){
         repository.put(CommandName.ADD, new Add());
         repository.put(CommandName.FIND, new Find());
-        repository.put(CommandName.WRONG_REQUEST, new WrongRequest());
+        repository.put(CommandName.NON_EXISTING, new WrongRequest());
+        repository.put(CommandName.EXIT, new Exit());
+        repository.put(CommandName.HELP, new Help());
+
     }
 
     Command getCommand(String name){
@@ -26,7 +28,7 @@ final class CommandProvider {
             command = repository.get(commandName);
         }catch(IllegalArgumentException | NullPointerException e){
 //write log
-            command = repository.get(CommandName.WRONG_REQUEST);
+            command = repository.get(CommandName.NON_EXISTING);
         }
         return command;
     }

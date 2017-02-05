@@ -1,6 +1,7 @@
 package com.epam.test_news_manger.dao;
 
 import com.epam.news_manager.bean.*;
+import com.epam.news_manager.dao.exception.DAOException;
 import com.epam.news_manager.dao.impl.DAOFactory;
 import com.epam.news_manager.dao.impl.FileGenericDAOImpl;
 import org.testng.Assert;
@@ -76,7 +77,7 @@ public class FindableTest {
     }
 
     @Test(dataProvider = "test1")
-    public void findTest(FileGenericDAOImpl dao, Serializable bean){
+    public void findTest(FileGenericDAOImpl dao, Serializable bean) throws DAOException{
         BeanFactory.getInstance().getKeys().getBookIDs().add(dao.create(bean));
         Assert.assertEquals(bean,dao.find("date",new Date(13454566).toString(), false).get(0),"find fails");
     }

@@ -13,7 +13,7 @@ import java.io.File;
  * Created by Dzmitry_Sankouski on 02-Feb-17.
  */
 public class KeysDAOSmokeTest {
-    Keys keys = null;
+    private Keys keys = null;
 
     @BeforeClass
     public void createKeys(){
@@ -43,7 +43,7 @@ public class KeysDAOSmokeTest {
     }
 
     @Test
-    public void createDelete(){
+    public void createDelete() throws DAOException {
         DAOFactory.getInstance().getKeysDAO().create(keys);
         DAOFactory.getInstance().getKeysDAO().delete(keys);
 

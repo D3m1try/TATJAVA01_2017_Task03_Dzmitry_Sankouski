@@ -2,7 +2,6 @@ package com.epam.news_manager.dao.impl;
 
 import com.epam.news_manager.bean.Keys;
 import com.epam.news_manager.dao.exception.DAOException;
-
 import java.io.*;
 
 /**
@@ -12,28 +11,21 @@ public class KeysDAO extends FileGenericDAOImpl<Keys> {
 
     public Keys read() throws DAOException {
         FileInputStream fis = null;
-        ObjectInputStream oin = null;
+//        ObjectInputStream oin = null;
         Keys result = null;
 
         try {
             fis = new FileInputStream(new File(Keys.selfId));
         } catch (FileNotFoundException e) {
-            throw new DAOException();
+            throw new DAOException("File " + Keys.selfId + " was not found");
         }
-        try {
-            oin = new ObjectInputStream(fis);
+
+        try(ObjectInputStream oin = new ObjectInputStream(fis)) {
             result = (Keys) oin.readObject();
         } catch (IOException e) {
-            System.out.println("IO Exception while reading " + FileIdGenerator.getInstance().generateId(result));
+            throw new DAOException("IO Exception while reading " + Keys.selfId);
         } catch (ClassNotFoundException e) {
-            System.out.println("Class \"Shop\" not found.");
-        }//TODO handle exceptions
-        finally {
-            try {
-                oin.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            throw new DAOException("Class " + result.getClass().getSimpleName() + " was not found");
         }
         return result;
     }

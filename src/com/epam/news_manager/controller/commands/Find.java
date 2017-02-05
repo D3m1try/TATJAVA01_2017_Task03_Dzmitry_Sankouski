@@ -1,6 +1,8 @@
 package com.epam.news_manager.controller.commands;
 
 import com.epam.news_manager.controller.Command;
+import com.epam.news_manager.controller.impl.CommandName;
+import com.epam.news_manager.services.exception.ServiceException;
 import com.epam.news_manager.services.impl.BooksCatalog;
 import com.epam.news_manager.services.impl.DisksCatalog;
 import com.epam.news_manager.services.impl.MoviesCatalog;
@@ -18,16 +20,21 @@ public class Find implements Command {
         Pattern pattern = Pattern.compile("^(\\s*)(\\w+)(.+)");
         Matcher matcher = pattern.matcher(request);
         matcher.find();
-        if (matcher.group(2).toLowerCase().equals("book")){
-            return Viewer.beansToString(BooksCatalog.getInstance().find(matcher.group(3)));
-        }
-        if (matcher.group(2).toLowerCase().equals("disk")){
-            return Viewer.beansToString(DisksCatalog.getInstance().find(matcher.group(3)));
-        }
-        if (matcher.group(2).toLowerCase().equals("movie")){
-            return Viewer.beansToString(MoviesCatalog.getInstance().find(matcher.group(3)));
+
+        try {
+            if (matcher.group(2).toLowerCase().equals("book")){
+                return Viewer.beansToString(BooksCatalog.getInstance().find(matcher.group(3)));
+            }
+            if (matcher.group(2).toLowerCase().equals("disk")){
+                return Viewer.beansToString(DisksCatalog.getInstance().find(matcher.group(3)));
+            }
+            if (matcher.group(2).toLowerCase().equals("movie")){
+                return Viewer.beansToString(MoviesCatalog.getInstance().find(matcher.group(3)));
+            }
+            return CommandName.FIND.getUsage();
+        } catch (ServiceException e) {
+            return e.getMessage();
         }
 
-        return "find";
     }
 }

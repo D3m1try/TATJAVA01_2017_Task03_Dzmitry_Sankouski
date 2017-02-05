@@ -29,7 +29,7 @@ public class FileGenericDAOImpl<T extends Serializable & Identifiable<String>> i
 
 
     @Override
-    public String create(T newInstance) {
+    public String create(T newInstance) throws DAOException {
         newInstance.setId(FileIdGenerator.getInstance().generateId(newInstance));
         this.update(newInstance);
         return newInstance.getId();
@@ -38,36 +38,26 @@ public class FileGenericDAOImpl<T extends Serializable & Identifiable<String>> i
     @Override
     public T read(String id) throws DAOException {
         FileInputStream fis = null;
-        ObjectInputStream oin = null;
         T result = null;
 
         try {
             fis = new FileInputStream(new File(id));
         } catch (FileNotFoundException e) {
-            throw new DAOException();
+            throw new DAOException("File " + id + " was not found");
         }
-        try {
-            oin = new ObjectInputStream(fis);
+        try(ObjectInputStream oin = new ObjectInputStream(fis)) {
             result = (T) oin.readObject();
         } catch (IOException e) {
-            System.out.println("IO Exception while reading " + id);
+            throw new DAOException("IO Exception while reading " + id);
         } catch (ClassNotFoundException e) {
-            System.out.println("Class \"Shop\" not found.");
-        } finally {
-            try {
-                oin.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-            //TODO handle exceptions
+            throw new DAOException("Class " + result.getClass().getSimpleName() + " was not found");
         }
         return result;
     }
 
 
     @Override
-    public void update(T transientObject) {
+    public void update(T transientObject) throws DAOException {
         FileOutputStream fos;
         ObjectOutputStream oos;
 
@@ -78,11 +68,11 @@ public class FileGenericDAOImpl<T extends Serializable & Identifiable<String>> i
             oos.flush();
             oos.close();
         } catch (FileNotFoundException e) {
-            System.out.println(transientObject.getId() + " not found");
+            throw new DAOException(transientObject.getId() + " not found");
         } catch (IOException e) {
-            System.out.println("IO Exception while saving" + transientObject.getId());
+            throw new DAOException("IO Exception while saving" + transientObject.getId());
         }
-    }// TODO handle exceptions
+    }
 
     @Override
     public void delete(T persistentObject) {
@@ -99,13 +89,13 @@ public class FileGenericDAOImpl<T extends Serializable & Identifiable<String>> i
                 try {
                     data.add(this.read(key));
                 } catch (DAOException e) {
-                    e.printStackTrace(); //TODO Exception
+                    e.printStackTrace(); //TODO logging
                 }
             }
         } // retrieving all data
 
         Pattern purePattern = Pattern.compile(fieldName + ":" + value + ";");
-        Pattern ordinaryPattern = Pattern.compile(fieldName + ":" + ".*" + value + ".*");
+        Pattern ordinaryPattern = Pattern.compile(fieldName + ":" + ".*" + value.toLowerCase() + ".*");
         Matcher matcher;
 
         List<T> result = new ArrayList<>();
@@ -115,7 +105,7 @@ public class FileGenericDAOImpl<T extends Serializable & Identifiable<String>> i
             if (isPureSearch) {
                 matcher = purePattern.matcher(peaceOfData.toString());
             } else {
-                matcher = ordinaryPattern.matcher(peaceOfData.toString());
+                matcher = ordinaryPattern.matcher(peaceOfData.toString().toLowerCase());
             }
             if (matcher.find()){
                 result.add(peaceOfData);

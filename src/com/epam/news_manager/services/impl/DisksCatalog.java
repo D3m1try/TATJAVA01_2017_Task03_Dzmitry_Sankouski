@@ -5,6 +5,7 @@ import com.epam.news_manager.bean.Book;
 import com.epam.news_manager.bean.Disk;
 import com.epam.news_manager.dao.exception.DAOException;
 import com.epam.news_manager.dao.impl.DAOFactory;
+import com.epam.news_manager.services.exception.ServiceException;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -19,64 +20,68 @@ import java.util.regex.Pattern;
 /**
  * Created by Dzmitry_Sankouski on 01-Feb-17.
  */
-public class DisksCatalog implements com.epam.news_manager.services.Catalog<Disk>{
+public class DisksCatalog implements com.epam.news_manager.services.Catalog<Disk> {
     private static DisksCatalog instance = new DisksCatalog();
     private boolean isBooksUp = false;
     private Set<Disk> disks = new HashSet<>();
     private Set<Disk> savedDisks;
 
-    private DisksCatalog(){
+    private DisksCatalog() {
 
     }
 
-    private void initDisks(){
-        if (BeanFactory.getInstance().getKeys().getBookIDs().size() == 0){
+    private void initDisks() throws ServiceException {
+        if (BeanFactory.getInstance().getKeys().getBookIDs().size() == 0) {
             savedDisks = new HashSet<>();
         } else {
-            for (String id:
+            for (String id :
                     BeanFactory.getInstance().getKeys().getBookIDs()) {
                 try {
                     savedDisks.add(DAOFactory.getInstance().getDiskDAO().read(id));
                 } catch (DAOException e) {
-                    e.printStackTrace();//TODO throw exception
+                    throw new ServiceException(e.getMessage());
                 }
             }
         }
     }
 
     @Override
-    public void add(String request) {
+    public void add(String request) throws ServiceException {
         Disk newDisk = new Disk();
-        fillDisk(newDisk,request);
+        fillDisk(newDisk, request);
 
+        try {
+            BeanFactory.getInstance().getKeys().getDiskIDs().add(
+                    DAOFactory.getInstance().getDiskDAO().create(newDisk));
+            DAOFactory.getInstance().getKeysDAO().update(BeanFactory.getInstance().getKeys());
+        } catch (DAOException e) {
+            throw new ServiceException(e.getMessage());
+        }
         disks.add(newDisk);
-        BeanFactory.getInstance().getKeys().getDiskIDs().add(
-                DAOFactory.getInstance().getDiskDAO().create(newDisk));
-        DAOFactory.getInstance().getKeysDAO().update(BeanFactory.getInstance().getKeys());
     }
 
     public void edit(String request) {
 
     }
 
-    public void fillDisk(Disk disk, String request){
+    public void fillDisk(Disk disk, String request) throws ServiceException {
         Pattern pattern = Pattern.compile("(\\s\\-[^\\s]+\\s+)([^\\s]+)");
         Matcher matcher = pattern.matcher(request);
 
-        while (matcher.find()){
-            if (matcher.group(1).toUpperCase().contains("T")){
+        while (matcher.find()) {
+            if (matcher.group(1).toUpperCase().contains("T")) {
                 disk.setTitle(matcher.group(2));
             }
-            if (matcher.group(1).toUpperCase().contains("D")){
+            if (matcher.group(1).toUpperCase().contains("D")) {
                 DateFormat format = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
                 try {
                     disk.setDate(format.parse(matcher.group(2)));
                 } catch (ParseException e) {
-                    e.printStackTrace();//TODO throw exception
+                    throw new ServiceException("Wrong date format");
                 }
             }
 
-            if (matcher.group(1).toUpperCase().contains("M")){
+            if (matcher.group(1).toUpperCase().contains("M")) {
                 disk.setMessage(matcher.group(2));
             }
         }
@@ -88,12 +93,12 @@ public class DisksCatalog implements com.epam.news_manager.services.Catalog<Disk
     }
 
     @Override
-    public List<Disk> find(String request) {
+    public List<Disk> find(String request) throws ServiceException {
         Pattern pattern = Pattern.compile("(\\-p)?\\s?(\\w+)\\s+(.+)");
         Matcher matcher = pattern.matcher(request);
 
-        if (!matcher.find()){
-            // TODO illegal arguments exception
+        if (!matcher.find()) {
+            throw new ServiceException("Illegal arguments");
         }
         if (matcher.group(1) != null) {
             return DAOFactory.getInstance().getDiskDAO().find(matcher.group(2), matcher.group(3), true);
@@ -103,15 +108,23 @@ public class DisksCatalog implements com.epam.news_manager.services.Catalog<Disk
     }
 
     @Override
-    public void save() {
-        for (Disk disk:
+    public void save() throws ServiceException {
+        for (Disk disk :
                 disks) {
-            DAOFactory.getInstance().getDiskDAO().create(disk);
+            try {
+                DAOFactory.getInstance().getDiskDAO().create(disk);
+            } catch (DAOException e) {
+                throw new ServiceException(e.getMessage());
+            }
             savedDisks.add(disk);
         }
 
-        DAOFactory.getInstance().getKeysDAO().update(BeanFactory.getInstance().getKeys());
-        DAOFactory.getInstance().getBooksDAO().update(BeanFactory.getInstance().getBooks());
+        try {
+            DAOFactory.getInstance().getKeysDAO().update(BeanFactory.getInstance().getKeys());
+            DAOFactory.getInstance().getBooksDAO().update(BeanFactory.getInstance().getBooks());
+        } catch (DAOException e) {
+            throw new ServiceException(e.getMessage());
+        }
 
     }
 

@@ -19,7 +19,7 @@ public class BeanFactory {
         try {
             keys = DAOFactory.getInstance().getKeysDAO().read();
         } catch (DAOException e) {
-            // TODO throw exception
+            // TODO what TODO
         }finally {
             if (keys == null) {
                 keys = new Keys();

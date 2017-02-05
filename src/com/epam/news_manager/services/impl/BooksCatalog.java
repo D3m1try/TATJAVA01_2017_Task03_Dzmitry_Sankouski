@@ -4,6 +4,7 @@ import com.epam.news_manager.bean.BeanFactory;
 import com.epam.news_manager.bean.Book;
 import com.epam.news_manager.dao.exception.DAOException;
 import com.epam.news_manager.dao.impl.DAOFactory;
+import com.epam.news_manager.services.exception.ServiceException;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -21,68 +22,73 @@ public class BooksCatalog implements com.epam.news_manager.services.Catalog<Book
     private Set<Book> books = new HashSet<>();
     private Set<Book> savedBooks;
 
-    private BooksCatalog(){
+    private BooksCatalog() {
 
     }
 
-    private void initBooks(){
-        if (BeanFactory.getInstance().getKeys().getBookIDs().size() == 0){
+    private void initBooks() throws ServiceException {
+        if (BeanFactory.getInstance().getKeys().getBookIDs().size() == 0) {
             savedBooks = new HashSet<>();
         } else {
-            for (String id:
+            for (String id :
                     BeanFactory.getInstance().getKeys().getBookIDs()) {
                 try {
                     savedBooks.add(DAOFactory.getInstance().getBookDAO().read(id));
                 } catch (DAOException e) {
-                    e.printStackTrace();//TODO throw exception
+                    throw new ServiceException(e.getMessage());
                 }
             }
         }
-    }
+    } // retrieving books
 
     @Override
-    public void add(String request) {
+    public void add(String request) throws ServiceException {
         Book newBook = new Book();
-        fillBook(newBook,request);
+        fillBook(newBook, request);
 
         books.add(newBook);
-        BeanFactory.getInstance().getKeys().getBookIDs().add(
-                DAOFactory.getInstance().getBookDAO().create(newBook));
-        DAOFactory.getInstance().getKeysDAO().update(BeanFactory.getInstance().getKeys());
+        try {
+            BeanFactory.getInstance().getKeys().getBookIDs().add(
+                    DAOFactory.getInstance().getBookDAO().create(newBook));
+            DAOFactory.getInstance().getKeysDAO().update(BeanFactory.getInstance().getKeys());
+        } catch (DAOException e) {
+            throw new ServiceException(e.getMessage());
+        }
     }
 
     public void edit(String request) {
 
     }
 
-    public void fillBook(Book book, String request){
+    public void fillBook(Book book, String request) throws ServiceException {
         Pattern pattern = Pattern.compile("(\\s\\-[^\\s]+\\s+)([^\\s]+)");
         Matcher matcher = pattern.matcher(request);
 
-        while (matcher.find()){
-            if (matcher.group(1).toUpperCase().contains("ISBN")){
-                book.setISBN(matcher.group(2));
-            } if (matcher.group(1).toUpperCase().contains("T")){
-                book.setTitle(matcher.group(2));
-            }
-            if (matcher.group(1).toUpperCase().contains("D")){
+        while (matcher.find()) {
+            if (matcher.group(1).toUpperCase().contains("D")) {
                 DateFormat format = new SimpleDateFormat("yyyy-MM-dd", Locale.ENGLISH);
                 try {
                     book.setDate(format.parse(matcher.group(2)));
                 } catch (ParseException e) {
-                    e.printStackTrace();//TODO throw exception
+                    throw new ServiceException("Wrong date format");
                 }
             }
-
-            if (matcher.group(1).toUpperCase().contains("M")){
-                book.setMessage(matcher.group(2));
-            }
-            if (matcher.group(1).toUpperCase().contains("P")){
+            if (matcher.group(1).toUpperCase().contains("P")) {
                 try {
                     book.setPageCount(Integer.valueOf(matcher.group(2)));
                 } catch (NumberFormatException e) {
-                    e.printStackTrace();// TODO throw exception
+                    throw new ServiceException("Page count should be Integer");
                 }
+            }
+            if (matcher.group(1).toUpperCase().contains("ISBN")) {
+                book.setISBN(matcher.group(2));
+            }
+            if (matcher.group(1).toUpperCase().contains("T")) {
+                book.setTitle(matcher.group(2));
+            }
+
+            if (matcher.group(1).toUpperCase().contains("M")) {
+                book.setMessage(matcher.group(2));
             }
         }
     }
@@ -93,12 +99,12 @@ public class BooksCatalog implements com.epam.news_manager.services.Catalog<Book
     }
 
     @Override
-    public List<Book> find(String request) {
+    public List<Book> find(String request) throws ServiceException {
         Pattern pattern = Pattern.compile("(\\-p)?\\s?(\\w+)\\s+(.+)");
         Matcher matcher = pattern.matcher(request);
 
-        if (!matcher.find()){
-            // TODO illegal arguments exception
+        if (!matcher.find()) {
+            throw new ServiceException("Illegal arguments");
         }
         if (matcher.group(1) != null) {
             return DAOFactory.getInstance().getBookDAO().find(matcher.group(2), matcher.group(3), true);
@@ -108,15 +114,23 @@ public class BooksCatalog implements com.epam.news_manager.services.Catalog<Book
     }
 
     @Override
-    public void save() {
-        for (Book book:
-             books) {
-            DAOFactory.getInstance().getBookDAO().create(book);
+    public void save() throws ServiceException {
+        for (Book book :
+                books) {
+            try {
+                DAOFactory.getInstance().getBookDAO().create(book);
+            } catch (DAOException e) {
+                throw new ServiceException(e.getMessage());
+            }
             savedBooks.add(book);
         }
 
-        DAOFactory.getInstance().getKeysDAO().update(BeanFactory.getInstance().getKeys());
-        DAOFactory.getInstance().getBooksDAO().update(BeanFactory.getInstance().getBooks());
+        try {
+            DAOFactory.getInstance().getKeysDAO().update(BeanFactory.getInstance().getKeys());
+            DAOFactory.getInstance().getBooksDAO().update(BeanFactory.getInstance().getBooks());
+        } catch (DAOException e) {
+            throw new ServiceException(e.getMessage());
+        }
 
     }
 
